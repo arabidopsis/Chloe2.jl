@@ -118,7 +118,9 @@ function fix_splice_junctions!(gene_model, glength)
                 previous_feature = gene_model[i - 1]
                 if previous_feature.target_from + previous_feature.target_length ≠ feature.target_from # disagreement on boundary
                     if previous_feature.type == "tRNA"
+                        current_target_from = feature.target_from
                         feature.target_from = mod1(previous_feature.target_from + previous_feature.target_length, glength) # trust tRNA match over intron match
+                        feature.target_length += (current_target_from - feature.target_from)
                     elseif previous_feature.type == "CDS"
                         previous_feature.target_length = circulardistance(previous_feature.target_from, feature.target_from, glength) # trust intron match over CDS match
                     end
@@ -130,7 +132,9 @@ function fix_splice_junctions!(gene_model, glength)
                     if next_feature.type == "tRNA"
                         feature.target_length = circulardistance(feature.target_from, next_feature.target_from, glength) # trust tRNA match over intron match
                     elseif next_feature.type == "CDS"
+                        current_target_from = next_feature.target_from
                         next_feature.target_from = mod1(feature.target_from + feature.target_length, glength) # trust intron match over CDS match
+                        next_feature.target_length += (current_target_from - next_feature.target_from)
                     end
                 end
             end

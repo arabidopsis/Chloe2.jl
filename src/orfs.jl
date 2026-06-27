@@ -159,10 +159,8 @@ end
 
 function fix_stop_codon!(gene_model, stop_codon, stops, glength)
     lastexon = last(gene_model)
-    #if lastexon.query == "rps12_5a";println(lastexon);end
     #pick first stop
     orfbits = split(lastexon.target_id, "*")
-    if length(orfbits) < 3; println(orfbits);end
     frame = parse(Int, orfbits[3])
     stop_idx = searchsortedfirst(stops[frame], lastexon.target_from) #index of first in-frame stop following start of last exon
     if stop_idx == length(stops[frame]) + 1 #no stop before end of genome
@@ -196,12 +194,12 @@ function fill_missing_exon!(gene_model, template)
         intron.target_from += 9
         intron.target_length -= 9
     elseif template.gene == "rps12" && template.order == 6
-        if partorder(last(gene_model)) == 5   #rps12 has second intron
+        if only(partorder(last(gene_model))) == 5   #rps12 has second intron
             intron = last(gene_model)
             exonstart = intron.target_from + intron.target_length
             frame = mod1(exonstart + 2, 3) #rps12_6 is always phase 2
             push!(gene_model, FeatureMatch("rps12*$(intron.strand)*$(string(frame))*$(string(exonstart))-$(string(exonstart + 25))", ["rps12_6"], intron.strand, "CDS", 1, 26, exonstart, 26, intron.evalue))
-        elseif partorder(last(gene_model)) == 4 #rps12 lacks second intron
+        elseif only(partorder(last(gene_model))) == 4 #rps12 lacks second intron
             exon = last(gene_model)
             push!(gene_model, FeatureMatch(exon.target_id, ["rps12_6"], exon.strand, "CDS", 1, 26, exon.target_from + exon.target_length, 26, exon.evalue))
         end

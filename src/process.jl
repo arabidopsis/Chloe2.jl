@@ -101,7 +101,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
     @info "found $(length(cds_matches)) CDS exons"
     t4 = time()
     @info "time taken to find CDSs: $(t4 - t3)"
-    #println(filter(x -> gene(x) == "clpP1", cds_matches))
+    #println(filter(x -> gene(x) == "rps16", cds_matches))
     record = GenomicAnnotations.Record{Gene}()
     record.name = id
     record.sequence = genome[1:glength]
@@ -123,7 +123,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
                 addmatches2genemodels!(part, gene_models, trn_matches, glength)
             end
         end
-        #if last(key) == "trnI-GAU"; println(gene_models); end
+        #if last(key) == "rps12"; println(gene_models); end
         #match introns
         for part in eachrow(parts)
             if part.feature == "intron"
@@ -138,7 +138,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
                 intron_search_time += t7 -t6
             end
         end
-        #if last(key) == "trnI-GAU"; println(gene_models); end
+        #if last(key) == "rps16"; println(gene_models); end
         #finalise gene models
         transsplicedparts = Set{Vector{FeatureMatch}}()
         for gm in gene_models
@@ -149,7 +149,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
                     fill_missing_exon!(gm, part)
                 end
             end
-            #if last(key) == "clpP1"; println(gm); end
+            #if last(key) == "rps12"; println(gm); end
             fix_splice_junctions!(gm, glength)
             #if last(key) == "clpP1"; println(gm); end
             #fix start & stop codons
@@ -166,7 +166,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
                     fix_start_codon!(gm, (starts, startcodons, stops), glength)
                 end
             end
-            #if last(key) == "ndhD"; println(gm); end
+            #if last(key) == "rps16"; println(gm); end
             lastexon = last(gm)
             if ~ismissing(lastexon) && lastexon.type == "CDS"
                 if lastexon.strand == '+'
@@ -178,7 +178,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
                 end
                 fix_stop_codon!(gm, hmm_stop_codon, stops, glength)
             end
-            
+            #if last(key) == "rps16"; println(gm); end
             if last(key) ∈ transspliced
                 push!(transsplicedparts, gm)
             else

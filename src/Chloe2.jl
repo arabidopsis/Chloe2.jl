@@ -13,7 +13,7 @@ using CSV
 using DataFrames
 using Printf
 
-#export main, emma, emmaone, writeGFF, writeGB, tempfilename, TempFile, drawgenome, rotate
+export main, chloe, chloeone, writeGFF, tempfilename, TempFile
 
 const chloe2models = joinpath(artifact"Chloe2_models", "Chloe2_models-2.0.0-alpha", "models")
 
