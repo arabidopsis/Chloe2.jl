@@ -194,7 +194,7 @@ function fix_splice_junctions!(gene_model, glength)
             println(intronb)
             println(next_exon)
         end =#
-        if any(ismissing.((previous_exon, intronb, next_exon))) || previous_exon.type ≠ "CDS" #don't worry about reading frame
+        if any(ismissing.((previous_exon, intronb, next_exon))) || previous_exon.type ≠ "CDS" || next_exon.type ≠ "CDS" #don't worry about reading frame
             if ~ismissing(previous_exon) && previous_exon.model_to == model_lengths[only(previous_exon.queryparts)] && previous_exon.evalue < introna.evalue #trust previous exon
                 current_target_from = introna.target_from
                 introna.target_from = previous_exon.target_from + previous_exon.target_length
