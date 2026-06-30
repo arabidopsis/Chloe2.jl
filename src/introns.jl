@@ -99,5 +99,7 @@ function parse_intron_tbl(results::Union{Missing, IOBuffer}, glength::Int)
     end
     close(results)
     @debug intronmatch
+    filter!(x -> x.evalue < 1e-3, intron_matches)
+    isempty(intron_matches) && return missing
     first(rationalise_matches!(intron_matches, glength))
 end

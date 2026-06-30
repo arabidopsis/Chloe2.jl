@@ -181,6 +181,9 @@ function fill_missing_exon!(part, gene_model)
              [part], intron.strand, "CDS", 1, model_lengths[part], intron.target_from, model_lengths[part], intron.evalue))
         intron.target_from += model_lengths[part]
         intron.target_length -= model_lengths[part]
+    elseif part == "rpl16_1" # rpl16 lacks intron
+        exon = last(gene_model)
+        pushfirst!(gene_model, FeatureMatch(exon.target_id, ["rpl16_1"], exon.strand, "CDS", 1, 9, exon.target_from - 9, 9, exon.evalue))
     elseif part == "rps12_5"
         if only(partorder(last(gene_model))) == 4   #rps12 has second intron
             intron = last(gene_model)
