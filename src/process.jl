@@ -29,6 +29,7 @@ function build_transspliced_genes!(transsplicedparts, transsplicedgms)
 end
 
 function fix_exon_borders!(gm::Vector{FeatureMatch}, genome, fstarts, fstartcodons, fstops, rev_genome, rstarts, rstartcodons, rstops)
+    isempty(gm) && return gm
     glength = length(genome)
     firstexon = first(gm)
     #fix start & stop codons
