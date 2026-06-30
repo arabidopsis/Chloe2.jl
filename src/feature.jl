@@ -200,7 +200,7 @@ function fix_splice_junctions!(gene_model, glength)
                 current_target_from = introna.target_from
                 introna.target_from = previous_exon.target_from + previous_exon.target_length
                 introna.target_length += (current_target_from - introna.target_from)
-            elseif introna.model_from == 1 && introna.evalue < previous_exon.evalue #trust intron instead
+            elseif introna.model_from == 1 && ~ismissing(previous_exon) && introna.evalue < previous_exon.evalue #trust intron instead
                 previous_exon.target_length = circulardistance(previous_exon.target_from, introna.target_from, glength) 
             end
             if ~ismissing(next_exon) && next_exon.model_from == 1 && ~ismissing(intronb) && next_exon.evalue < intronb.evalue #trust next exon
