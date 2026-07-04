@@ -74,7 +74,7 @@ function parse_intron_tbl(results::Union{Missing, IOBuffer}, glength::Int)
     for hit in hits
         bits = split(hit, " ", keepempty=false)
         query = bits[3]
-        m = match(r"(^[^.]+)(?:\.[0-9]+)?\.([^.]+)\.([+|-])\.(-?[0-9]+)-[0-9]+", bits[1]) # (?:\.[0-9]+)? is optional match to .1 version number on accession
+        m = match(r"(^.+)\.([^.]+)\.([+|-])\.(-?[0-9]+)-[0-9]+", bits[1]) # (?:\.[0-9]+)? is optional match to .1 version number on accession
         if isnothing(m)
             println("intronseqname: ", bits[1])
             println(hits)
