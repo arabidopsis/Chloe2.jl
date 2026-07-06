@@ -2,13 +2,13 @@
 
 julia_version = "1.12.6"
 manifest_format = "2.0"
-project_hash = "36d79fe3609d00062ce1cdc9df90f06c7c5e094d"
+project_hash = "c3b8d36d8ff09826524dfbab3668388959dbaf02"
 
-[[deps.ArgMacros]]
-deps = ["TextWrap"]
-git-tree-sha1 = "a6b8d0f9ecc0842d55c86a153869b1a38b6df7e0"
-uuid = "dbc42088-9de8-42a0-8ec8-2cd114e1ea3e"
-version = "0.2.5"
+[[deps.ArgParse]]
+deps = ["Logging", "TextWrap"]
+git-tree-sha1 = "22cf435ac22956a7b45b0168abbc871176e7eecc"
+uuid = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
+version = "1.2.0"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -53,9 +53,10 @@ uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 version = "0.10.16"
 
 [[deps.Chloe2]]
+deps = ["Artifacts", "BioSequences", "CSV", "DataFrames", "FASTX", "GenomicAnnotations", "Logging", "Pkg", "Printf", "UUIDs", "Unicode"]
 path = "."
 uuid = "1d21a3ea-894c-4d83-b6fd-f6f4ad6c670f"
-version = "2.0.0-alpha"
+version = "2.0.0-alpha.6"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]

@@ -62,7 +62,7 @@ function fix_exon_borders!(gm::Vector{FeatureMatch}, genome, fstarts, fstartcodo
     gm
 end
 
-function chloeone(tempfile::TempFile, infile::String, edits::MayBeString; sensitivity = false, reportpseudos = false)
+function chloeone(tempfile::TempFile, infile::String, edits::MayBeString; sensitivity = false)
     id, fwd_seq = FASTA.Reader(open(infile)) do infa
         record = first(infa)
         identifier(record), FASTA.sequence(LongDNA{4}, record)
@@ -80,10 +80,10 @@ function chloeone(tempfile::TempFile, infile::String, edits::MayBeString; sensit
             end
         end
     end
-    chloeone(tempfile, id, fwd_seq, rev_seq; sensitivity = sensitivity, reportpseudos = reportpseudos)
+    chloeone(tempfile, id, fwd_seq, rev_seq; sensitivity = sensitivity)
 end
 
-function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}, rev_target::LongDNA{4}; sensitivity = false, reportpseudos = false)
+function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}, rev_target::LongDNA{4}; sensitivity = false)
 
     t0 = time()
     glength = length(fwd_target)
@@ -210,36 +210,27 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
 end
 
 function chloe(tempfile::TempFile, infile::String;
-    edits::MayBeString=nothing, outfile_gff::MayBeString=nothing, outfile_gb::MayBeString=nothing, outfile_fa::MayBeString=nothing, sensitivity = false, reportpseudos = false)
+    edits::MayBeString=nothing, outfile_gff::MayBeString=nothing, sensitivity = false, reportpseudos = false)
 
-    record = chloeone(tempfile, infile, edits; sensitivity = sensitivity, reportpseudos = reportpseudos)
+    record = chloeone(tempfile, infile, edits; sensitivity = sensitivity)
     t6 = time()
-    if ~isnothing(outfile_fa)
-        open(FASTA.Writer, outfile_fa) do writer
-            write(writer, FASTA.Record(id, LongDNA{4}(genome[1:glength])))
-        end
-    end
     
     if ~isnothing(outfile_gff)
         writeGFF(record, outfile_gff; reportpseudos = reportpseudos)
     end
-    
-    #= if ~isnothing(outfile_gb)
-        writeGB(record, outfile_gb)
-    end =#
+
     t7 = time()
     @info "time taken to prepare and write outputs: $(t7 - t6)"
 end
 
 function chloe(infile::String;
-    edits::MayBeString=nothing, outfile_gff::MayBeString=nothing, outfile_gb::MayBeString=nothing, outfile_fa::MayBeString=nothing,
-    tempdir::MayBeString=nothing, sensitivity = false, reportpseudos = false)
+    edits::MayBeString=nothing, outfile_gff::MayBeString=nothing, tempdir::MayBeString=nothing, sensitivity = false, reportpseudos = false)
     if tempdir === nothing
         tempdir = "."
     end
     tempfile = TempFile(tempdir)
     try
-        chloe(tempfile, infile; edits=edits, outfile_gff=outfile_gff, outfile_gb=outfile_gb, outfile_fa=outfile_fa, sensitivity = sensitivity, reportpseudos = reportpseudos)
+        chloe(tempfile, infile; edits=edits, outfile_gff=outfile_gff, sensitivity = sensitivity, reportpseudos = reportpseudos)
     finally
         cleanfiles(tempfile)
     end

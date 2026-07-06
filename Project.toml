@@ -1,10 +1,10 @@
 name = "Chloe2"
 uuid = "1d21a3ea-894c-4d83-b6fd-f6f4ad6c670f"
-version = "2.0.0-alpha.5"
+version = "2.0.0-alpha.6"
 authors = ["Ian Small <ian.small@uwa.edu.au>"]
 
 [deps]
-ArgMacros = "dbc42088-9de8-42a0-8ec8-2cd114e1ea3e"
+ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
 Artifacts = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 BioSequences = "7e6ae17a-c86d-528c-b3b9-7f778a29fe59"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -18,7 +18,7 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 Unicode = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 
 [compat]
-ArgMacros = "0.2.5"
+ArgParse = "1.2.0"
 Artifacts = "1.11.0"
 BioSequences = "3.5.1"
 CSV = "0.10.16"

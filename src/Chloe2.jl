@@ -1,7 +1,7 @@
 module Chloe2
 
 #using Serialization
-using ArgMacros
+using ArgParse
 using Artifacts
 using BioSequences
 using FASTX
