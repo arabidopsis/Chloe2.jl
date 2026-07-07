@@ -1,5 +1,4 @@
-function printgff(io::IO, chr::GenomicAnnotations.Record, blacklist::Vector{UInt}; reportpseudos = false)
-    iobuffer = IOBuffer()
+function printgff(iobuffer::IO, chr::GenomicAnnotations.Record, blacklist::Vector{UInt}; reportpseudos = false)
     ### Header
     if occursin(r"^##gff-version 3", chr.header)
         print(iobuffer, chr.header)
@@ -22,16 +21,13 @@ function printgff(io::IO, chr::GenomicAnnotations.Record, blacklist::Vector{UInt
             println(iobuffer, join(s))
         end
     end
-    print(io, String(take!(iobuffer)))
+    # print(io, String(take!(iobuffer)))
 end
 
-function writeGFF(record::GenomicAnnotations.Record, outfile::String; reportpseudos = false)
+function writeGFF(record::GenomicAnnotations.Record, outfile::Union{String,IO}; reportpseudos = false)
     gffrecord = copy(record)
     gffrecord.sequence = dna""
-    addgene!(gffrecord, :region, ClosedSpan(1:length(record.sequence));
-            Name = record.name,
-            ID = record.name,
-            Is_circular = record.circular)
+    addgene!(gffrecord, :region, ClosedSpan(1:length(record.sequence)); Name = record.name, ID = record.name, Is_circular = record.circular)
     #catalogue pseudogenes
     pseudogenes = filter(x -> feature(x) == :pseudo, gffrecord.genes)
     pseudoids = get.(pseudogenes, :ID, "")
@@ -43,7 +39,11 @@ function writeGFF(record::GenomicAnnotations.Record, outfile::String; reportpseu
     end
     blacklist = sort!(unique!(index.(pseudogenes)))
     sort!(gffrecord.genes)
-    open(GFF.Writer, outfile) do out
-        printgff(out.output, gffrecord, blacklist; reportpseudos = reportpseudos)
+    if isa(outfile, IO)
+        printgff(GFF.Writer(outfile::IO).output, gffrecord, blacklist; reportpseudos = reportpseudos)
+    else
+        open(GFF.Writer, outfile) do out
+            printgff(out.output, gffrecord, blacklist; reportpseudos = reportpseudos)
+        end
     end
 end
