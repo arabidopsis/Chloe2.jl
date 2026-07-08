@@ -111,8 +111,8 @@ function addgene2record!(record::GenomicAnnotations.Record, genome, rev_genome, 
     tus = features2transcriptionunits(features, glength)
     #if startswith(first(features).query, "trnK-UUU"); println(tus); end
     genename = string(gene(first(tus)))
-    gene_id = uuid5(seqid, genename * string(first(features).target_from))
     gene_locus = length(tus) == 1 ? tu2genelocus(tus[1], glength) : Order(tu2genelocus.(tus, glength))
+    gene_id = uuid5(seqid, genename * string(gene_locus))
     featuretype = isempty(problems) ? :gene : :pseudo
     addgene!(record, featuretype, gene_locus; ID = string(gene_id), Name = genename, source = "Chloe2", score = @sprintf("%.2E", minimum(getproperty.(features, :evalue))))
 
