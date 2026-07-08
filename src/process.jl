@@ -203,7 +203,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
                 push!(transsplicedparts, gm)
             else
                 fix_exon_borders!(gm, genome, fstarts, fstartcodons, fstops, rev_genome, rstarts, rstartcodons, rstops)
-                addgene2record!(tempfile.uuid, record, genome, rev_genome, parts, gm)
+                addgene2record!(record, genome, rev_genome, parts, gm)
             end
         end
         if ~isempty(transsplicedparts)
@@ -212,7 +212,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
             tgenes = build_transspliced_genes!(transsplicedparts, transsplicedgms)
             for tgene in tgenes
                 fix_exon_borders!(tgene, genome, fstarts, fstartcodons, fstops, rev_genome, rstarts, rstartcodons, rstops)
-                addgene2record!(tempfile.uuid, record, genome, rev_genome, parts, tgene)
+                addgene2record!(record, genome, rev_genome, parts, tgene)
             end
         end
     end

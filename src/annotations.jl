@@ -55,7 +55,7 @@ function features2exonloci(features::Vector{FeatureMatch}, glength::Int)
     end
 end
 
-function addgene2record!(uid::UUID, record::GenomicAnnotations.Record, genome, rev_genome, parts, features::Vector{FeatureMatch})
+function addgene2record!(record::GenomicAnnotations.Record, genome, rev_genome, parts, features::Vector{FeatureMatch})
     isempty(features) && return
     glength = length(record.sequence)
 
@@ -102,13 +102,17 @@ function addgene2record!(uid::UUID, record::GenomicAnnotations.Record, genome, r
     end
     #if gene(first(features)) == "rps4";println(features); println(problems);end
     #~isempty(problems) && return
+
+    #UUID: should be identical for same output — same sequence id, same sequence, same annotation, but unique if any of these are different
+    nameid = uuid5(CHLOE_NAMESPACE, record.name)
+    seqid = uuid5(nameid, String(record.sequence))
     
     #gene
     tus = features2transcriptionunits(features, glength)
     #if startswith(first(features).query, "trnK-UUU"); println(tus); end
     genename = string(gene(first(tus)))
-    gene_id = uuid5(uid, genename * string(first(features).target_from))
     gene_locus = length(tus) == 1 ? tu2genelocus(tus[1], glength) : Order(tu2genelocus.(tus, glength))
+    gene_id = uuid5(seqid, genename * string(gene_locus))
     featuretype = isempty(problems) ? :gene : :pseudo
     addgene!(record, featuretype, gene_locus; ID = string(gene_id), Name = genename, source = "Chloe2", score = @sprintf("%.2E", minimum(getproperty.(features, :evalue))))
 
