@@ -9,7 +9,9 @@ function build_transspliced_genes!(transsplicedparts, transsplicedgms)
     extended = false
     for tgm in transsplicedgms
         o = 1
-        while any(x -> only(partorder(x)) == o, tgm); o += 1; end
+        while any(x -> only(partorder(x)) == o, tgm)
+            o += 1;
+        end
         newparts = []
         for gm in transsplicedparts
             if any(x -> only(partorder(x)) == o, gm)
@@ -23,7 +25,9 @@ function build_transspliced_genes!(transsplicedparts, transsplicedgms)
         end
         append!(tgm, first(newparts))
     end
-    if ~extended; return transsplicedgms; end
+    if ~extended
+        return transsplicedgms;
+    end
     union!(transsplicedgms, gmstoadd)
     build_transspliced_genes!(transsplicedparts, transsplicedgms)
 end
@@ -35,11 +39,11 @@ function fix_exon_borders!(gm::Vector{FeatureMatch}, genome, fstarts, fstartcodo
     #fix start & stop codons
     if ~ismissing(firstexon) && firstexon.type == "CDS"
         if firstexon.strand == '+'
-            hmm_start_codon = genome[firstexon.target_from:firstexon.target_from+2]
-            (starts, startcodons, stops) =  (fstarts, fstartcodons, fstops)
+            hmm_start_codon = genome[firstexon.target_from:(firstexon.target_from+2)]
+            (starts, startcodons, stops) = (fstarts, fstartcodons, fstops)
         else
-            hmm_start_codon = rev_genome[firstexon.target_from:firstexon.target_from+2]
-            (starts, startcodons, stops) =  (rstarts, rstartcodons, rstops)
+            hmm_start_codon = rev_genome[firstexon.target_from:(firstexon.target_from+2)]
+            (starts, startcodons, stops) = (rstarts, rstartcodons, rstops)
         end
         if hmm_start_codon ∉ [dna"ATG", dna"GTG", dna"ACG"] # assume that if predicted start is ACG it is edited to AUG
             fix_start_codon!(gm, (starts, startcodons, stops), glength)
@@ -49,10 +53,10 @@ function fix_exon_borders!(gm::Vector{FeatureMatch}, genome, fstarts, fstartcodo
     lastexon = last(gm)
     if ~ismissing(lastexon) && lastexon.type == "CDS"
         if lastexon.strand == '+'
-            hmm_stop_codon = genome[lastexon.target_from+lastexon.target_length:lastexon.target_from+lastexon.target_length+2]
+            hmm_stop_codon = genome[(lastexon.target_from+lastexon.target_length):(lastexon.target_from+lastexon.target_length+2)]
             stops = fstops
         else
-            hmm_stop_codon = rev_genome[lastexon.target_from+lastexon.target_length:lastexon.target_from+lastexon.target_length+2]
+            hmm_stop_codon = rev_genome[(lastexon.target_from+lastexon.target_length):(lastexon.target_from+lastexon.target_length+2)]
             stops = rstops
         end
         fix_stop_codon!(gm, hmm_stop_codon, stops, glength)
@@ -62,11 +66,22 @@ function fix_exon_borders!(gm::Vector{FeatureMatch}, genome, fstarts, fstartcodo
     gm
 end
 
-function chloeone(tempfile::TempFile, infile::String, edits::MayBeString; sensitivity = false)
-    id, fwd_seq = FASTA.Reader(open(infile)) do infa
-        record = first(infa)
+function maybeio(f::Function, io::Union{String,IO}, mode::AbstractString)
+    if isa(io, IO)
+        f(io)
+    else
+        open(io, mode) do out
+            f(out)
+        end
+    end
+end
+
+function chloeone(tempfile::TempFile, infile::Union{String,IO}, edits::MayBeString; sensitivity = false)
+    id, fwd_seq = maybeio(infile, "r") do infa
+        record = first(FASTA.Reader(infa))
         identifier(record), FASTA.sequence(LongDNA{4}, record)
     end
+
     rev_seq = BioSequences.reverse_complement(fwd_seq)
     if ~isnothing(edits)
         glength = length(rev_seq)
@@ -75,8 +90,8 @@ function chloeone(tempfile::TempFile, infile::String, edits::MayBeString; sensit
             nt = first(eachposition(locus(site)))
             if fwd_seq[nt] == DNA_C
                 fwd_seq[nt] = DNA_T
-            elseif rev_seq[glength - nt + 1] == DNA_C
-                rev_seq[glength - nt + 1] = DNA_T
+            elseif rev_seq[glength-nt+1] == DNA_C
+                rev_seq[glength-nt+1] = DNA_T
             end
         end
     end
@@ -84,7 +99,6 @@ function chloeone(tempfile::TempFile, infile::String, edits::MayBeString; sensit
 end
 
 function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}, rev_target::LongDNA{4}; sensitivity = false)
-
     t0 = time()
     glength = length(fwd_target)
     genome = CircularSequence(fwd_target)
@@ -92,7 +106,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
     @info "$id\t$glength bp"
 
     #extend genome
-    extended_genome = genome[1:glength+4000]
+    extended_genome = genome[1:(glength+4000)]
 
     extended_file = tempfilename(tempfile, "$id.extended.fa")
     open(FASTA.Writer, extended_file) do writer
@@ -113,7 +127,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
 
     #find rRNAs
     #search for rrns using hmmsearch
-    rrn_matches = parse_tbl(rrnsearch(extended_file;  sensitivity = sensitivity), glength)
+    rrn_matches = parse_tbl(rrnsearch(extended_file; sensitivity = sensitivity), glength)
     filter!(x -> x.evalue < 1e-10, rrn_matches)
     @debug rrn_matches
     #fix_rrn_ends!(v, ftRNAs, rtRNAs, glength)
@@ -131,7 +145,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
     rstarts, rstartcodons = getcodons(rev_genome, startcodon)
     rstops = codonmatches(rev_genome, stopcodon)
 
-    cds_matches =  parse_domt(orfsearch(tempfile, id, genome, fstops, rstops, minORF;  sensitivity = sensitivity), glength)
+    cds_matches = parse_domt(orfsearch(tempfile, id, genome, fstops, rstops, minORF; sensitivity = sensitivity), glength)
     @debug cds_matches
     @info "found $(length(cds_matches)) CDS exons"
     t4 = time()
@@ -170,7 +184,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
                     end
                 end
                 t7 = time()
-                intron_search_time += t7 -t6
+                intron_search_time += t7 - t6
             end
         end
         #if last(key) == "rps4"; println(gene_models); end
@@ -194,7 +208,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
         end
         if ~isempty(transsplicedparts)
             transsplicedgms = Set{Vector{FeatureMatch}}()
-            push!(transsplicedgms, Vector{FeatureMatch}(undef,0))
+            push!(transsplicedgms, Vector{FeatureMatch}(undef, 0))
             tgenes = build_transspliced_genes!(transsplicedparts, transsplicedgms)
             for tgene in tgenes
                 fix_exon_borders!(tgene, genome, fstarts, fstartcodons, fstops, rev_genome, rstarts, rstartcodons, rstops)
@@ -209,12 +223,17 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
     return record
 end
 
-function chloe(tempfile::TempFile, infile::String;
-    edits::MayBeString=nothing, outfile_gff::MayBeString=nothing, sensitivity = false, reportpseudos = false)
-
+function chloe(
+    tempfile::TempFile,
+    infile::Union{String,IO};
+    edits::MayBeString = nothing,
+    outfile_gff::Union{String,IO,Nothing} = nothing,
+    sensitivity = false,
+    reportpseudos = false
+)
     record = chloeone(tempfile, infile, edits; sensitivity = sensitivity)
     t6 = time()
-    
+
     if ~isnothing(outfile_gff)
         writeGFF(record, outfile_gff; reportpseudos = reportpseudos)
     end
@@ -223,14 +242,20 @@ function chloe(tempfile::TempFile, infile::String;
     @info "time taken to prepare and write outputs: $(t7 - t6)"
 end
 
-function chloe(infile::String;
-    edits::MayBeString=nothing, outfile_gff::MayBeString=nothing, tempdir::MayBeString=nothing, sensitivity = false, reportpseudos = false)
+function chloe(
+    infile::Union{String,IO};
+    edits::MayBeString = nothing,
+    outfile_gff::Union{String,IO,Nothing} =  nothing=nothing ,
+    tempdir::MayBeString = nothing,
+    reportpseudos = false,
+    sensitivity = false
+)
     if tempdir === nothing
         tempdir = "."
     end
     tempfile = TempFile(tempdir)
     try
-        chloe(tempfile, infile; edits=edits, outfile_gff=outfile_gff, sensitivity = sensitivity, reportpseudos = reportpseudos)
+        chloe(tempfile, infile; edits = edits, outfile_gff = outfile_gff, sensitivity = sensitivity, reportpseudos = reportpseudos)
     finally
         cleanfiles(tempfile)
     end
