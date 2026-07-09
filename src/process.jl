@@ -239,7 +239,7 @@ function chloe(
     end
 
     t7 = time()
-    @info "time taken to prepare and write outputs: $(t7 - t6)"
+    @info "$(id): time taken to prepare and write outputs: $(t7 - t6)"
 end
 
 function chloe(
