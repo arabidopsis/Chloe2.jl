@@ -1,13 +1,14 @@
 import Logging
 
 function parse_commandline(args = ARGS)
+    version = pkgversion(Chloe2)
     s = ArgParseSettings(;
         prog = "Chloe2",
         description = "annotates angiosperm plastid genomes",
-        usage = "Chloe2/src/command.jl [options] <FASTA_files or directories>",
+        usage = "chloe2 [options] <FASTA_files or directories>",
         epilog = "If there is more than one fasta file to annotate then if the options (--gff etc.) are *not* directories " *
                  "they will be used as suffixes for the output filenames and they will be put alongside the input fasta files.",
-        version = "2.0.1",
+        version = string(version),
         add_version = true
     )
 

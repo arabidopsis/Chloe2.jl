@@ -1,4 +1,4 @@
 import Chloe2: main
 
-main()
+main(ARGS)
 
