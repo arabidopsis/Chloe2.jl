@@ -33,4 +33,4 @@ Unicode = "^1.11.0"
 julia = "^1.11"
 
 [apps]
-chloe2 = { julia_flags = ["--threads=auto", "--optimize=2", "--startup-file=no"] }
+chloe2 = { julia_flags = ["--threads=auto", "--optimize=2"] }
