@@ -53,10 +53,10 @@ uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 version = "0.10.16"
 
 [[deps.Chloe2]]
-deps = ["Artifacts", "BioSequences", "CSV", "DataFrames", "FASTX", "GenomicAnnotations", "Logging", "Pkg", "Printf", "UUIDs", "Unicode"]
+deps = ["ArgParse", "Artifacts", "BioSequences", "CSV", "DataFrames", "FASTX", "GenomicAnnotations", "Logging", "Pkg", "Printf", "UUIDs", "Unicode"]
 path = "."
 uuid = "1d21a3ea-894c-4d83-b6fd-f6f4ad6c670f"
-version = "2.0.0-alpha.6"
+version = "2.0.1"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
