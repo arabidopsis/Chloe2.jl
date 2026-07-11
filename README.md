@@ -13,21 +13,31 @@ Tell Julia to treat the repo as a Julia package:
 
 `julia`
 
-`using Pkg`
+type the character `]` which should bring up a prompt like `(@v1.12) pkg>` 
 
-`Pkg.add("https://github.com/ian-small/Chloe2.jl")`
+Now type:
+
+`add https://github.com/ian-small/Chloe2.jl`
+
+and if you have a julia version > 1.11 you can create a commandline script
+
+`app add https://github.com/ian-small/Chloe2.jl`
+
+(You *need* to have `~/.julia/bin` in your `PATH`)
 
 You can now quit the Julia REPL with Ctrl-D
 
 ## Running Chloe2
 
-To annotate a single genome in .gff format (note the `--` to separate julia options from Chloe2's):
+To annotate a single genome in .gff format
 
-`julia -e 'using Chloe2; main()' -- --loglevel info --gff my_genome.gff my_genome.fasta`
+`julia -m Chloe2 --loglevel info --gff my_genome.gff my_genome.fasta`
+
+(*or* if you have added the app simply `chloe2 --loglevel info --gff my_genome.gff my_genome.fasta`)
 
 To annotate many fasta files concurrently in the directory 'my_genomes' and save the generated .gff files in the same directory (note: Use consistant inputs/outputs. If you wish to annotate a directory of fasta files, ensure that the output options are also directories):
 
-`julia -t 16 -e 'using Chloe2; main()' -- --loglevel error --gff my_genomes my_genomes`
+`julia -t 16 -m Chloe2 --loglevel error --gff my_genomes my_genomes`
 
 In this case `-t 16` indicates julia should use 16 threads concurrently.
 
@@ -35,14 +45,10 @@ Running multiple threads concurrently will greatly increase speed until limited 
 
 For more options, see
 
-`julia -e 'using Chloe2; main()' -- --help`                                             
+`julia -m Chloe2 --help`                                             
 
 --edits file/dir for gff input containing edit site information
 
 --pseudo reports incomplete or otherwise problematic features as pseudogenes
 
 --max uses the --max setting for searches with HMMER and Infernal. Not recommended for general use.
-
-
-
-
