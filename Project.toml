@@ -32,4 +32,4 @@ UUIDs = "1.11.0"
 Unicode = "1.11.0"
 
 [apps]
-chloe2 = {}
+chloe2 = "chloe2"
