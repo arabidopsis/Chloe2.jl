@@ -23,7 +23,7 @@ and if you have a julia version > 1.11 you can create a commandline script
 
 `app add https://github.com/ian-small/Chloe2.jl`
 
-(You *need* to have `~/.julia/bin` in your `PATH`)
+(You now *need* to have `~/.julia/bin` in your `PATH`)
 
 You can now quit the Julia REPL with Ctrl-D
 
