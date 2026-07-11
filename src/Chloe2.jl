@@ -19,7 +19,7 @@ const chloe2models = joinpath(artifact"Chloe2_models", "Chloe2_models-2.0.0-alph
 const CHLOE_NAMESPACE = UUID("21d368ee-1647-4eec-a0c0-c42b8d8f3419")
 
 (@main)(args) = begin
-    main(args)
+    chloe_main(args)
 end
 
 include("tempfile.jl")

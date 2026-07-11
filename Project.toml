@@ -1,6 +1,6 @@
 name = "Chloe2"
 uuid = "1d21a3ea-894c-4d83-b6fd-f6f4ad6c670f"
-version = "2.0.1"
+version = "2.0.2"
 authors = ["Ian Small <ian.small@uwa.edu.au>"]
 
 [deps]

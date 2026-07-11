@@ -48,7 +48,7 @@ end
 const LOGLEVELS = Dict("info" => Logging.Info, "debug" => Logging.Debug, "warn" => Logging.Warn,
     "error" => Logging.Error)
 
-function main(args=ARGS)
+function chloe_main(args=ARGS)
     args = parse_commandline(args)
     llevel = get(LOGLEVELS, lowercase(args["loglevel"]), Logging.Warn)
     global_logger(ConsoleLogger(stderr, llevel, meta_formatter=Logging.default_metafmt))
