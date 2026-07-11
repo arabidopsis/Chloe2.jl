@@ -1,11 +1,17 @@
 import Logging
 
 function parse_commandline()
-    s = ArgParseSettings(prog="Chloe2", description="annotates angiosperm plastid genomes", usage="Chloe2/src/command.jl [options] <FASTA_files or directories>",
-        epilog="If there is more than one fasta file to annotate then if the options (--gff etc.) are *not* directories
-            they will be used as suffixes for the output filenames and they will be put alongside the input fasta files.",
-        version="2.0.0-alpha.7", add_version=true)
+    s = ArgParseSettings(;
+        prog = "Chloe2",
+        description = "annotates angiosperm plastid genomes",
+        usage = "Chloe2/src/command.jl [options] <FASTA_files or directories>",
+        epilog = "If there is more than one fasta file to annotate then if the options (--gff etc.) are *not* directories " *
+                 "they will be used as suffixes for the output filenames and they will be put alongside the input fasta files.",
+        version = "2.0.0-alpha.7",
+        add_version = true
+    )
 
+    #! format: off
     @add_arg_table! s begin
         "--edits"
             help = "file/dir for GFF input containing edit site information"
@@ -140,5 +146,3 @@ function main()
         asyncmap(x -> doone(x[1], x[2]; overwrite = overwrite, sensitivity = sensitivity, reportpseudos = reportpseudos), collect(zip(fastafiles, gfffiles)); ntasks = Threads.nthreads())
     end
 end
-
-
