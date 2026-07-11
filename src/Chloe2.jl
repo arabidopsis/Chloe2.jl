@@ -18,7 +18,9 @@ export main, chloe, chloeone, writeGFF, tempfilename, TempFile
 const chloe2models = joinpath(artifact"Chloe2_models", "Chloe2_models-2.0.0-alpha.2", "models")
 const CHLOE_NAMESPACE = UUID("21d368ee-1647-4eec-a0c0-c42b8d8f3419")
 
-(@main)(args) = begin main() end
+(@main)(args) = begin
+    main(args)
+end
 
 include("tempfile.jl")
 include("circularity.jl")

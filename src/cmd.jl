@@ -1,6 +1,6 @@
 import Logging
 
-function parse_commandline()
+function parse_commandline(args=ARGS)
     s = ArgParseSettings(;
         prog = "Chloe2",
         description = "annotates angiosperm plastid genomes",
@@ -43,13 +43,13 @@ function parse_commandline()
             help = "files/directories for fasta input"
             nargs = '+'
     end
-    return parse_args(s)
+    return parse_args(args,s)
 end
 const LOGLEVELS = Dict("info" => Logging.Info, "debug" => Logging.Debug, "warn" => Logging.Warn,
     "error" => Logging.Error)
 
-function main()
-    args = parse_commandline()
+function main(args=ARGS)
+    args = parse_commandline(args)
     llevel = get(LOGLEVELS, lowercase(args["loglevel"]), Logging.Warn)
     global_logger(ConsoleLogger(stderr, llevel, meta_formatter=Logging.default_metafmt))
 
