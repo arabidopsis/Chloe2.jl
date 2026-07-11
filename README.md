@@ -43,6 +43,8 @@ In this case `-t 16` indicates julia should use 16 threads concurrently.
 
 Running multiple threads concurrently will greatly increase speed until limited by number of cores, RAM or I/O. Each thread will consume ~1.2 GB of RAM.
 
+For the command line use the bare `--` option to separate julia options from chloe2 options:  `chloe2 -t 16 -- --loglevel error --gff my_genomes my_genomes`
+
 For more options, see
 
 `julia -m Chloe2 --help`                                             
