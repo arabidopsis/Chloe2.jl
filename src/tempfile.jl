@@ -21,10 +21,40 @@ function cleanfiles(tempfile::TempFile)
     end
 end
 
+const EXES = Dict{String,String}()
+
 function which(cmd::String)::String
-    fcmd = Sys.which(cmd)
-    fcmd === nothing && error("command $cmd not found in PATH")
-    # place holder... do we have cmd in our PATH or not...
-    # this should be like python which.
-    fcmd
+    if cmd in EXES
+        return EXES[cmd]
+    end
+    path = Sys.which(cmd)
+    path === nothing && error("Required executable $cmd not found in PATH")
+    EXES[cmd] = path
+    return path
+end
+
+function missing_executables()::Vector{String}
+    notfound = String[]
+    for cmd in ["hmmsearch", "cmscan", "nhmmer", "cmsearch"]
+        path = Sys.which(cmd)
+        if path === nothing
+            push!(notfound, cmd)
+        else
+            EXES[cmd] = path
+        end
+    end
+    return notfound
+end
+function ensure_executables()
+    notfound = missing_executables()
+    if length(notfound) > 0
+        s = length(notfound) == 1 ? " is" : "s are"
+        p = length(notfound) == 1 ? "it" : "them"
+        println(
+            stderr,
+            "The following required executable$(s) not in your PATH: \"$(join(notfound, ", "))\". " *
+            "We can't continue without $(p). Please install $(p) and try again."
+        )
+        exit(0)
+    end
 end
