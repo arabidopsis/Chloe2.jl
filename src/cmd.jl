@@ -49,8 +49,26 @@ end
 const LOGLEVELS = Dict("info" => Logging.Info, "debug" => Logging.Debug, "warn" => Logging.Warn,
     "error" => Logging.Error)
 
+function missing_executables():: Vector{String}
+    notfound = String[]
+    for cmd in ["hmmsearch", "cmscan", "nhmmer", "cmsearch"]
+        Sys.which(cmd) === nothing && push!(notfound, cmd)
+    end
+    return notfound
+end
+function have_executables()
+    notfound = missing_executables()
+    if length(notfound) > 0
+        s = length(notfound) == 1 ? " is"  : "s are"
+        p = length(notfound) == 1 ? "it" : "them"
+        println(stderr, "The following required executable$(s) not in your PATH: \"$(join(notfound, ", "))\". " *
+         "We can't continue without $(p). Please install $(p) and try again.")
+        exit(0)
+    end
+end
 function chloe_main(args=ARGS)
     args = parse_commandline(args)
+    have_executables()
     llevel = get(LOGLEVELS, lowercase(args["loglevel"]), Logging.Warn)
     global_logger(ConsoleLogger(stderr, llevel, meta_formatter=Logging.default_metafmt))
 

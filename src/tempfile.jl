@@ -3,7 +3,7 @@ struct TempFile
     directory::String
     uuid::UUID
     ext::Vector{String}
-    function TempFile(directory::String=".")
+    function TempFile(directory::String = ".")
         new(directory, uuid1(), [])
     end
 end
@@ -17,13 +17,14 @@ function cleanfiles(tempfile::TempFile)
         ext = pop!(tempfile.ext)
         # don't add to tempfile.ext with tempfilename!!
         path = joinpath(tempfile.directory, "$(tempfile.uuid).$(ext)")
-        rm(path, force=true)
+        rm(path; force = true)
     end
-
 end
 
 function which(cmd::String)::String
+    fcmd = Sys.which(cmd)
+    fcmd === nothing && error("command $cmd not found in PATH")
     # place holder... do we have cmd in our PATH or not...
     # this should be like python which.
-    cmd
+    fcmd
 end
