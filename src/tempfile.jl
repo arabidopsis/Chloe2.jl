@@ -24,7 +24,7 @@ end
 const EXES = Dict{String,String}()
 
 function which(cmd::String)::String
-    if cmd in EXES
+    if cmd in keys(EXES)
         return EXES[cmd]
     end
     path = Sys.which(cmd)
