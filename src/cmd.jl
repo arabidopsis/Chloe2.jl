@@ -109,6 +109,21 @@ function chloe_main(args=ARGS)
         gfffiles = fill(nothing, length(fastafiles))
     end
     @assert length(gfffiles) == length(fastafiles)
+    gffout = args["gff"]
+    if length(fastafiles) > 1
+        if ~isnothing(gffout)
+            @error "multiple input files but --gff has not been specified as a directory. Please specify a directory for --gff"
+            exit(1)
+        end
+        if isfile(gffout)
+            @error "multiple input files but --gff output \"$(gffout)\" exists as a file. Please specify a directory for --gff"
+            exit(1)
+        end
+        if !isdir(gffout)
+            @warn "multiple input files but --gff output \"$(gffout)\" is not a directory. Creating it."
+            mkdir(gffout)
+        end
+    end
     function doone(fasta, edits; overwrite = false, sensitivity = false, reportpseudos = false)
         ncid = Ref{String}("")
         #try
@@ -117,7 +132,7 @@ function chloe_main(args=ARGS)
                 @assert startswith(basename(edits), accession)
             end
             ncid[] = basename(accession)
-            outfile_gff = ofunc(accession, args["gff"], ".gff")
+            outfile_gff = ofunc(accession, gffout, ".gff")
             if ~overwrite && isfile(outfile_gff)
                 @warn "$outfile_gff exists and overwrite is false"
                 return
