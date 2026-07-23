@@ -121,7 +121,7 @@ function chloe_main(args=ARGS)
         end
         if !isdir(gffout)
             @warn "multiple input files but --gff output \"$(gffout)\" is not a directory. Creating it."
-            mkdir(gffout)
+            mkpath(gffout)
         end
     end
     function doone(fasta, edits; overwrite = false, sensitivity = false, reportpseudos = false)
