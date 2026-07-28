@@ -5,7 +5,7 @@ const fusedparts = ["petB_1", "petD_1", "rpl16_1", "rps12_5"]
 MayBeString = Union{Nothing,String}
 
 function build_transspliced_genes!(transsplicedparts, transsplicedgms)
-    gmstoadd = Set{Vector{Chloe2.FeatureMatch}}()
+    gmstoadd = OrderedSet{Vector{Chloe2.FeatureMatch}}()
     extended = false
     for tgm in transsplicedgms
         o = 1
@@ -189,7 +189,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
         end
         #if last(key) == "rps4"; println(gene_models); end
         #finalise gene models
-        transsplicedparts = Set{Vector{FeatureMatch}}()
+        transsplicedparts = OrderedSet{Vector{FeatureMatch}}()
         for gm in gene_models
             isempty(gm) && continue
             sort!(gm; by = x -> (only(partorder(x)), x.target_from))
@@ -207,7 +207,7 @@ function chloeone(tempfile::TempFile, id::AbstractString, fwd_target::LongDNA{4}
             end
         end
         if ~isempty(transsplicedparts)
-            transsplicedgms = Set{Vector{FeatureMatch}}()
+            transsplicedgms = OrderedSet{Vector{FeatureMatch}}()
             push!(transsplicedgms, Vector{FeatureMatch}(undef, 0))
             tgenes = build_transspliced_genes!(transsplicedparts, transsplicedgms)
             for tgene in tgenes

@@ -99,6 +99,10 @@ function chloe_main(args=ARGS)
     fastafiles = [fa for d in args["infiles"] for fa in readfiles(d, r"\.(fa|fna|fasta)")]
     if length(fastafiles) != 1
         ofunc = getout
+        if ~isnothing(args["gff"]) && ~isdir(args["gff"])
+            @error("if multiple fasta files are given then --gff must be a directory")
+            return
+        end
     else
         ofunc = getout1
     end
@@ -141,11 +145,12 @@ function chloe_main(args=ARGS)
     #read model lengths from .hmm and .cm files
     get_model_lengths()
     Base.exit_on_sigint(false)
-    if Threads.nthreads() == 1
+    if Threads.nthreads() == 1 || length(fastafiles) == 1
         for (fasta, edits) in zip(fastafiles, gfffiles)
             doone(fasta, edits; overwrite = overwrite, sensitivity = sensitivity, reportpseudos = reportpseudos)
         end
     else
         asyncmap(x -> doone(x[1], x[2]; overwrite = overwrite, sensitivity = sensitivity, reportpseudos = reportpseudos), collect(zip(fastafiles, gfffiles)); ntasks = Threads.nthreads())
     end
+    0 # @main is expecting an integer return value
 end
