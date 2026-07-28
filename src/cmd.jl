@@ -99,10 +99,6 @@ function chloe_main(args=ARGS)
     fastafiles = [fa for d in args["infiles"] for fa in readfiles(d, r"\.(fa|fna|fasta)")]
     if length(fastafiles) != 1
         ofunc = getout
-        if ~isnothing(args["gff"]) && ~isdir(args["gff"])
-            @error("if multiple fasta files are given then --gff must be a directory")
-            return
-        end
     else
         ofunc = getout1
     end
@@ -115,7 +111,7 @@ function chloe_main(args=ARGS)
     @assert length(gfffiles) == length(fastafiles)
     gffout = args["gff"]
     if length(fastafiles) > 1
-        if ~isnothing(gffout)
+        if isnothing(gffout)
             @error "multiple input files but --gff has not been specified as a directory. Please specify a directory for --gff"
             exit(1)
         end
