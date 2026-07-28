@@ -12,6 +12,7 @@ using UUIDs
 using CSV
 using DataFrames
 using Printf
+using OrderedCollections
 
 export main, chloe, chloeone, writeGFF, tempfilename, TempFile, missing_executables
 
