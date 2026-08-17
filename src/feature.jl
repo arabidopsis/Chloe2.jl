@@ -218,19 +218,26 @@ function fix_splice_junctions!(gene_model, glength)
                 max(intronb.target_from + intronb.target_length + model_lengths[only(intronb.queryparts)] - intronb.model_to,
                 next_exon.target_from))
             frameshift = mod(frame(next_exon) - frame(previous_exon), 3)
-            #if gene(gene_model) == "petB"; println(donor_zone, "\t", acceptor_zone, "\t", frameshift);end
+            if gene(gene_model) == "rpoC1"; println(donor_zone, "\t", acceptor_zone, "\t", frameshift);end
             best_score = typemax(Int)
             best_junction = 0 => 0
             for i in donor_zone, j in acceptor_zone
                 mod(j - i - 1, 3) ≠ frameshift && continue # won't preserve reading frame
-                #calculate penalties
-                penalty = 0 #positive penalties for intrusion into exon model, intrusion into or extension of intron models 
-                #add scaling factor to favour intrusion of exon over intrusion of intron?
-                penalty += max(0, (previous_exon.target_from + previous_exon.target_length - 1 + model_lengths[only(previous_exon.queryparts)] - previous_exon.model_to) - i)
-                penalty += abs(introna.target_from - introna.model_from - i)
-                penalty += abs(j - (intronb.target_from + intronb.target_length + model_lengths[only(intronb.queryparts)] - intronb.model_to))
-                penalty += max(0, j - (next_exon.target_from - next_exon.model_from + 1))
-                #if gene(gene_model) == "petB"; println(i, "\t", j, "\t", penalty);end
+                #calculate penalties; weight intrusion penalties more heavily, try * 4 for introns, * 2 for exons
+                penalty = 0 #positive penalties for intrusion into exon model, intrusion into or extension of intron models
+                #exon intrusion penalty
+                penalty += 2 * max(0, (previous_exon.target_from + previous_exon.target_length - 1 + model_lengths[only(previous_exon.queryparts)] - previous_exon.model_to) - i)
+                #intron donor side extrusion penalty; use estimated intron start
+                penalty += max(0, introna.target_from - introna.model_from - i)
+                #intron donor side intrusion penalty; use observed intron start
+                penalty += 4 * max(0, i - introna.target_from)
+                #intron acceptor side extrusion penalty; use estimated intron end
+                penalty += max(0, j - (intronb.target_from + intronb.target_length + model_lengths[only(intronb.queryparts)] - intronb.model_to))
+                #intron acceptor side intrusion penalty; use observed intron end
+                penalty += 4 * max(0, (intronb.target_from + intronb.target_length) - j)
+                #exon intrusion penalty
+                penalty += 2 * max(0, j - (next_exon.target_from - next_exon.model_from + 1))
+                if gene(gene_model) == "rpoC1"; println(i, "\t", j, "\t", penalty);end
                 if penalty < best_score
                     best_score = penalty
                     best_junction = i => j
